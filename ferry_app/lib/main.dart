@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'ui/index/index.dart';
-import 'common/constants/color.dart';
+import 'common/config/global_config.dart';
 
 void main() {
   runApp(FerryApp());
@@ -12,10 +12,7 @@ class FerryApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return new MaterialApp(
       title: "chuanbo",
-      theme: ThemeData.light().copyWith(
-        primaryColor: Color(AppColors.AppBarColor),
-        cardColor: Color(AppColors.AppBarColor)
-      ),
+      theme: GlobalConfig.themeData,
       home: Index(),
     );
   }
