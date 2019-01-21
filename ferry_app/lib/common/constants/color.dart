@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   static const BackgroundColor = 0xffebebeb;
-  static const AppBarColor = 0xff81c784;
+  static const AppBarColor = 0xfffafafa;
   static const NavigationActive = 0xff009688;
+  static const TextSelectionColor = 0xff009688;  
   //static const NavigationActive = 0xff81c784;
 
   static const TabIconNormal = 0xff999999;

@@ -42,7 +42,7 @@ class _IndexState extends State<Index> with TickerProviderStateMixin {
     ];
     //初始化页面
     _pages = [
-      ShipMonitor(),
+      ShipConsole(),
       UserCenter(),
     ];
     _currentPage = _pages[_currentIndex];

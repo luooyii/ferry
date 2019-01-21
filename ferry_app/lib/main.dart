@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'ui/index/index.dart';
+import 'ui/login/login.dart';
 import 'common/config/global_config.dart';
 
 void main() {
@@ -13,7 +14,7 @@ class FerryApp extends StatelessWidget {
     return new MaterialApp(
       title: "chuanbo",
       theme: GlobalConfig.themeData,
-      home: Index(),
+      home: LoginPage(),//Index()
     );
   }
 }
