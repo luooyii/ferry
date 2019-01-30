@@ -1,0 +1,3 @@
+class ToastUtils{
+  _ToastUtils(){}
+}

@@ -24,7 +24,7 @@ class _IndexState extends State<Index> with TickerProviderStateMixin {
       new NavigationIconView(
         icon: IconData(
           0xe620,
-          fontFamily: "iconfont",
+          fontFamily: Constants.IconFontFamily,
         ),
         title: "监视器",
         vsync: this,
