@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../common/config/global_config.dart';
-import '../../common/constants/color.dart';
-import '../../common/constants/constants.dart';
+import '../../../common/theme.dart';
+import '../../../common/const.dart';
 import 'navigation_icon_view.dart';
-import '../ship_monitor/ship_monitor.dart';
 import '../ship_console/ship_console.dart';
 import '../user_center/user_center.dart';
 
@@ -57,7 +55,7 @@ class _IndexState extends State<Index> with TickerProviderStateMixin {
                 navigationIconView.item)
             .toList(),
         currentIndex: _currentIndex,
-        fixedColor: Color(AppColors.NavigationActive),
+        fixedColor: AppTheme.primaryColor,
         type: BottomNavigationBarType.fixed,
         onTap: (int index) {
           setState(() {
@@ -73,7 +71,7 @@ class _IndexState extends State<Index> with TickerProviderStateMixin {
           body: new Center(child: _currentPage),
           bottomNavigationBar: bottomNavigationBar,
         ),
-        theme: GlobalConfig.themeData);
+        theme: AppTheme.themeData);
   }
 
   @override

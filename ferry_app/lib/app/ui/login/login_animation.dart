@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../common/constants/color.dart';
+import '../../../common/theme.dart';
 import '../index/index.dart';
 import 'dart:async';
 
@@ -75,7 +75,7 @@ class StaggerAnimation extends StatelessWidget {
                 height: buttomZoomOut.value == 70 ? 60.0 : buttomZoomOut.value,
                 alignment: FractionalOffset.center,
                 decoration: new BoxDecoration(
-                  color: const Color(AppColors.NavigationActive),
+                  color: AppTheme.primaryColor,
                   borderRadius: buttomZoomOut.value < 400
                       ? new BorderRadius.all(const Radius.circular(30.0))
                       : new BorderRadius.all(const Radius.circular(0.0)),

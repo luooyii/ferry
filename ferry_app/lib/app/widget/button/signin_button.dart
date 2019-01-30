@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../common/constants/color.dart';
+import '../../../common/color.dart';
 
 class SignIn extends StatelessWidget {
   SignIn();
@@ -10,7 +10,7 @@ class SignIn extends StatelessWidget {
       height: 60.0,
       alignment: FractionalOffset.center,
       decoration: new BoxDecoration(
-        color: const Color(AppColors.NavigationActive),
+        color: const Color(AppColors.PrimaryColor),
         borderRadius: new BorderRadius.all(const Radius.circular(30.0)),
       ),
       child: new Text(
