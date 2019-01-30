@@ -6,7 +6,10 @@
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="Ferry"
-        android:icon="@mipmap/app_icon">
+        android:icon="@mipmap/app_icon">        
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="cb5e27c594f97720cbed9cda82ed791a"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -14,10 +17,6 @@
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density"
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
-            <!-- This keeps the window background of the activity showing
-                 until Flutter renders its first frame. It can be removed if
-                 there is no splash screen (such as the default splash screen
-                 defined in @style/LaunchTheme). -->
             <meta-data
                 android:name="io.flutter.app.android.SplashScreenUntilFirstFrame"
                 android:value="true" />
