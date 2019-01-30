@@ -5,7 +5,7 @@ import 'package:flutter/animation.dart';
 import 'dart:async';
 import '../../widget/signup_link.dart';
 import '../../widget/button/signin_button.dart';
-import '../../widget/form.dart';
+import '../../widget/form/form.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 
