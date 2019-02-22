@@ -13,7 +13,7 @@ const polylineList = const [
 class ShipOrientation extends StatefulWidget {
   ShipOrientation();
   factory ShipOrientation.forDesignTime() => ShipOrientation();
-  
+
   @override
   _ShipOrientationState createState() => _ShipOrientationState();
 }
@@ -33,15 +33,20 @@ class _ShipOrientationState extends State<ShipOrientation> {
               PolylineOptions(
                 latLngList: polylineList,
                 color: Colors.red,
-                isDottedLine: true,
                 isGeodesic: true,
-                dottedLineType: PolylineOptions.DOTTED_LINE_TYPE_CIRCLE,
-                width: 10,
+                lineCapType: PolylineOptions.LINE_CAP_TYPE_ARROW,
+                width: 30,
               ),
             ),
           ).catchError((e) => showError(context, e.toString()));
         },
-        amapOptions: AMapOptions(),
+        amapOptions: AMapOptions(
+          mapType:MAP_TYPE_SATELLITE,
+          scrollGesturesEnabled: false,
+          zoomGesturesEnabled: false,
+          tiltGesturesEnabled: false,
+          rotateGesturesEnabled: false,
+        ),
       ),
     );
   }
