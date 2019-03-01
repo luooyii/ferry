@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import '../../bloc/biz/ship_console_bloc.dart';
 
 class ShipPower extends StatefulWidget {
   @override
@@ -7,13 +8,23 @@ class ShipPower extends StatefulWidget {
 }
 
 class _ShipPowerState extends State<ShipPower> {
+  final bloc = ShipConsoleBloc();
+
   @override
   Widget build(BuildContext context) {
-    return new charts.LineChart(_createSampleData());
+    // charts.LineChart lineChart=charts.LineChart(_createSampleData());
+    // lineChart.updateCommonChart(baseChart, oldWidget, chartState)
+
+    return StreamBuilder<List>(
+        stream: bloc.attitudeStream,
+        initialData: bloc.lineChartData,
+        builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
+          return charts.LineChart(bloc.lineChartData);
+        });
   }
 
   List<charts.Series<LinearSales, int>> _createSampleData() {
-    final data = [
+    var data = [
       new LinearSales(0, 5),
       new LinearSales(1, 25),
       new LinearSales(2, 100),

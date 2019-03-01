@@ -11,6 +11,7 @@ dependencies:
     sdk: flutter
   http:
   rxdart:
+  common_utils:
   cupertino_icons:
   mqtt_client:
   web_socket_channel:

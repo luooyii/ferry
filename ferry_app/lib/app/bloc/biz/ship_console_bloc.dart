@@ -1,96 +1,45 @@
 import "package:rxdart/rxdart.dart";
 import "dart:async";
-import "dart:convert";
+import "package:common_utils/src/timer_util.dart";
+import 'package:charts_common/common.dart' as common;
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:mqtt_client/mqtt_client.dart';
 import "../../../common/uri.dart";
+import '../../data/entity/chart/point.dart';
 
 class ShipConsoleBloc {
   final MqttClient client = MqttClient(mqttServer, '');
 
-  final _attitudeSubject = BehaviorSubject<String>();
-  Stream<String> get attitude => _attitudeSubject.stream;
+  List<common.Series<ChartPoint, int>> lineChartData;
+  final _attitudeSubject = BehaviorSubject<List>();
+  Stream<List> get attitudeStream => _attitudeSubject.stream;
 
   Stream<Map<String, String>> credential;
 
   ShipConsoleBloc() {
-    connectMqttServer();
+    //connectMqttServer();
+
+    var data = [
+      new ChartPoint(0, 5),
+      new ChartPoint(1, 25),
+      new ChartPoint(2, 100),
+      new ChartPoint(3, 75),
+    ];
+
+    lineChartData = [
+      charts.Series<ChartPoint, int>(
+        id: 'Sales',
+        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+        domainFn: (ChartPoint point, _) => point.x,
+        measureFn: (ChartPoint point, _) => point.y,
+        data: data,
+      )
+    ];
+
+    data.add(ChartPoint(4,1000));
   }
 
-  void connectMqttServer() async {
-    client.logging(on: false);
-    client.keepAlivePeriod = 20;
-    client.onDisconnected = onDisconnected;
-    client.onConnected = onConnected;
-    client.onSubscribed = onSubscribed;
-
-    final MqttConnectMessage connMess = MqttConnectMessage()
-        .withClientIdentifier('Mqtt_MyClientUniqueId')
-        .keepAliveFor(20) // Must agree with the keep alive set above or not set
-        .withWillTopic(
-            'willtopic') // If you set this you must set a will message
-        .withWillMessage('My Will message')
-        .startClean() // Non persistent session for testing
-        .withWillQos(MqttQos.atLeastOnce);
-
-    print('EXAMPLE::Mosquitto client connecting....');
-    client.connectionMessage = connMess;
-
-    try {
-      await client.connect();
-    } on Exception catch (e) {
-      print('EXAMPLE::client exception - $e');
-      client.disconnect();
-    }
-
-    /// Check we are connected
-    if (client.connectionStatus.state == MqttConnectionState.connected) {
-      print('Mosquitto client connected');
-      print('Subscribing to the test/lol topic');
-    } else {
-      print('ERROR, status is ${client.connectionStatus}');
-      client.disconnect();
-    }
-
-    client.subscribe(mqttTopic, MqttQos.atMostOnce);
-
-    client.updates.listen((List<MqttReceivedMessage<MqttMessage>> c) {
-      final MqttPublishMessage recMess = c[0].payload;
-      final String pt =
-          MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
-
-      print('topic is <${c[0].topic}>, payload is <-- $pt -->');
-    });
-
-    /// Ok, we will now sleep a while, in this gap you will see ping request/response
-    /// messages being exchanged by the keep alive mechanism.
-    print('EXAMPLE::Sleeping....');
-    await MqttUtilities.asyncSleep(120);
-    client.unsubscribe(mqttTopic);
-
-    /// Wait for the unsubscribe message from the broker if you wish.
-    await MqttUtilities.asyncSleep(2);
-    print('EXAMPLE::Disconnecting');
-    client.disconnect();
-  }
-
-  /// The subscribed callback
-  void onSubscribed(String topic) {
-    print('EXAMPLE::Subscription confirmed for topic $topic');
-  }
-
-  /// The unsolicited disconnect callback
-  void onDisconnected() {
-    print('EXAMPLE::OnDisconnected client callback - Client disconnection');
-    if (client.connectionStatus.returnCode == MqttConnectReturnCode.solicited) {
-      print('EXAMPLE::OnDisconnected callback is solicited, this is correct');
-    }
-  }
-
-  /// The successful connect callback
-  void onConnected() {
-    print(
-        'EXAMPLE::OnConnected client callback - Client connection was sucessful');
-  }
+  
 
   void dispose() {
     _attitudeSubject.close();
