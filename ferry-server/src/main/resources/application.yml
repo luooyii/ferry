@@ -1,12 +1,12 @@
 server:
   port: 8080
   servlet:
-    context-path: /interest
+    context-path: /ferry
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/interest?useUnicode=true&characterEncoding=UTF-8&useSSL=false&jdbcCompliantTruncation=false&zeroDateTimeBehavior=convertToNull
-    username: root
-    password: root
+    url: jdbc:mysql://132.232.22.168:3306/ferry?useUnicode=true&characterEncoding=UTF-8&useSSL=false&jdbcCompliantTruncation=false&zeroDateTimeBehavior=convertToNull
+    username: luooyii
+    password: Abc996688+
     hikari:
       minimum-idle: 5
       maximum-pool-size: 15
@@ -14,17 +14,17 @@ spring:
       max-lifetime: 1800000
       connection-timeout: 30000
       pool-name: DatebookHikariCP
-  redis:
-    database: 0
-    host: 127.0.0.1
-    port: 6379
-    password: null
-    timeout: 5000ms
-    jedis:
-      pool:
-        max-active: 100
-        max-idle: 10
-        max-wait: 100000ms
+#  redis:
+#    database: 0
+#    host: 127.0.0.1
+#    port: 6379
+#    password: null
+#    timeout: 5000ms
+#    jedis:
+#      pool:
+#        max-active: 100
+#        max-idle: 10
+#        max-wait: 100000ms
   resources:
       static-locations:
       - classpath:/META-INF/resources/
@@ -34,10 +34,10 @@ spring:
       - file:${interest.properties.paths-properties.image}
 mybatis:
   mapper-locations: classpath:mybatis/mapper/*.xml
-  type-aliases-package: com.interest.model
+  type-aliases-package: cn.luooyii.ferry.server.model
 
 logging:
-  file: D:/interest/file/log/interest.log
+  file: D:/Project/Beacono/ferry/file/logs/interest.log
   level:
     org.springframework.web: DEBUG
     org.springframework.security: DEBUG
@@ -47,12 +47,7 @@ logging:
 interest:
   properties:
     paths-properties:
-      image: D:/interest/file/image
+      image: D:/Project/Beacono/ferry/file/image
 #      domain-name: http://www.lovemtt.com/interest
-      domain-name: http://127.0.0.1:8080/interest
-github:
-  client-id: 你在github中注册的client id
-  client-secret: 你在github中注册的client secret
-qq:
-  appid: 你在qq中注册的appid
-  appkey: 你在qq中注册的appkey
+      domain-name: http://127.0.0.1:8080/ferry
+

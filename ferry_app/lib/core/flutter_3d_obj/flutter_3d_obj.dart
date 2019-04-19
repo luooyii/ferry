@@ -17,7 +17,7 @@ class Object3D extends StatefulWidget {
     this.angleX,
     this.angleY,
     this.angleZ,
-    this.zoom = 100.0,
+    this.zoom = 0.05,
   });
 
   final Size size;
@@ -36,6 +36,7 @@ class _Object3DState extends State<Object3D> {
 
   @override
   void initState() {
+    super.initState();
     if (widget.asset == true) {
       rootBundle.loadString(widget.path).then((String value) {
         setState(() {
@@ -70,6 +71,7 @@ class _Object3DState extends State<Object3D> {
 
   File file;
 
+  //旋转
   void _updateCube(DragUpdateDetails data) {
     if (angleY > 360.0) {
       angleY = angleY - 360.0;
@@ -130,7 +132,8 @@ class _Object3DState extends State<Object3D> {
 }
 
 class _ObjectPainter extends CustomPainter {
-  double _zoomFactor = 100.0;
+  //缩放因子
+  double _zoomFactor = 10.0;
 
 //  final double _rotation = 5.0; // in degrees
   double _translation = 0.1 / 100;
@@ -166,6 +169,7 @@ class _ObjectPainter extends CustomPainter {
     _viewPortY = (size.height / 2).toDouble();
   }
 
+  //解析obj
   Map _parseObjString(String objString) {
     List vertices = <Vector3>[];
     List faces = <List<int>>[];

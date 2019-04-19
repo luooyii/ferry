@@ -16,6 +16,7 @@ dependencies:
   mqtt_client:
   web_socket_channel:
   charts_flutter:
+  fluttertoast:
   #高德地图
   amap_base:
 

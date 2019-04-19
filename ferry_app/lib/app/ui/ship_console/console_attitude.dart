@@ -9,7 +9,12 @@ class ShipAttitude extends StatefulWidget {
 class _ShipAttitudeState extends State<ShipAttitude> {
   @override
   Widget build(BuildContext context) {
-    return Object3D(
-        size: const Size(400.0, 400.0), path: "assets/ship.obj", asset: true);
+    return Container();
+    // return Object3D(
+    //   size: const Size(400.0, 400.0),
+    //   path: "assets/ship.obj",
+    //   asset: true,
+    //   zoom: 0.05,
+    // );
   }
 }
