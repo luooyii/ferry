@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../common/theme.dart';
-import '../index/index.dart';
 import 'dart:async';
 
 class StaggerAnimation extends StatelessWidget {
@@ -17,19 +16,20 @@ class StaggerAnimation extends StatelessWidget {
             ),
           ),
         ),
-        buttomZoomOut = new Tween(
-          begin: 70.0,
-          end: 1000.0,
-        ).animate(
-          new CurvedAnimation(
-            parent: buttonController,
-            curve: new Interval(
-              0.550,
-              0.999,
-              curve: Curves.bounceOut,
-            ),
-          ),
-        ),
+        // buttomZoomOut = new Tween(
+        //   begin: 70.0,
+        //   end: 1000.0,
+        // ).animate(
+        //   new CurvedAnimation(
+        //     parent: buttonController,
+        //     curve: new Interval(
+        //       0.550,
+        //       0.999,
+        //       curve: Curves.bounceOut,
+        //     ),
+        //   ),
+        // ),
+        //EdgeInsetsTween位移
         containerCircleAnimation = new EdgeInsetsTween(
           begin: const EdgeInsets.only(bottom: 50.0),
           end: const EdgeInsets.only(bottom: 0.0),
@@ -46,9 +46,9 @@ class StaggerAnimation extends StatelessWidget {
         super(key: key);
 
   final AnimationController buttonController;
-  final Animation<EdgeInsets> containerCircleAnimation;
-  final Animation buttonSqueezeanimation;
-  final Animation buttomZoomOut;
+  final Animation<EdgeInsets> containerCircleAnimation; //加载动画
+  final Animation buttonSqueezeanimation; //挤压动画
+  //final Animation buttomZoomOut; //滑动界面
 
   Future<Null> _playAnimation() async {
     try {
@@ -59,9 +59,7 @@ class StaggerAnimation extends StatelessWidget {
 
   Widget _buildAnimation(BuildContext context, Widget child) {
     return new Padding(
-      padding: buttomZoomOut.value == 70
-          ? const EdgeInsets.only(bottom: 50.0)
-          : containerCircleAnimation.value,
+      padding: const EdgeInsets.only(bottom: 50.0),
       child: new InkWell(
           onTap: () {
             _playAnimation();
@@ -69,16 +67,13 @@ class StaggerAnimation extends StatelessWidget {
           child: new Hero(
             tag: "fade",
             child: new Container(
-                width: buttomZoomOut.value == 70
-                    ? buttonSqueezeanimation.value
-                    : buttomZoomOut.value,
-                height: buttomZoomOut.value == 70 ? 60.0 : buttomZoomOut.value,
+                width: buttonSqueezeanimation.value,
+                height: 60.0,
                 alignment: FractionalOffset.center,
                 decoration: new BoxDecoration(
                   color: AppTheme.primaryColor,
-                  borderRadius: buttomZoomOut.value < 400
-                      ? new BorderRadius.all(const Radius.circular(30.0))
-                      : new BorderRadius.all(const Radius.circular(0.0)),
+                  borderRadius:
+                      new BorderRadius.all(const Radius.circular(30.0)),
                 ),
                 child: buttonSqueezeanimation.value > 75.0
                     ? new Text(
@@ -90,70 +85,59 @@ class StaggerAnimation extends StatelessWidget {
                           letterSpacing: 0.3,
                         ),
                       )
-                    : buttomZoomOut.value < 300.0
-                        ? new CircularProgressIndicator(
-                            value: null,
-                            strokeWidth: 1.0,
-                            valueColor:
-                                new AlwaysStoppedAnimation<Color>(Colors.white),
-                          )
-                        : null),
-            // child: buttomZoomOut.value <= 300
-            //     ? new Container(
-            //         width: buttomZoomOut.value == 70
-            //             ? buttonSqueezeanimation.value
-            //             : buttomZoomOut.value,
-            //         height:
-            //             buttomZoomOut.value == 70 ? 60.0 : buttomZoomOut.value,
-            //         alignment: FractionalOffset.center,
-            //         decoration: new BoxDecoration(
-            //           color: const Color(AppColors.NavigationActive),
-            //           borderRadius: buttomZoomOut.value < 400
-            //               ? new BorderRadius.all(const Radius.circular(30.0))
-            //               : new BorderRadius.all(const Radius.circular(0.0)),
-            //         ),
-            //         child: buttonSqueezeanimation.value > 75.0
-            //             ? new Text(
-            //                 "Sign In",
-            //                 style: new TextStyle(
-            //                   color: Colors.white,
-            //                   fontSize: 20.0,
-            //                   fontWeight: FontWeight.w300,
-            //                   letterSpacing: 0.3,
-            //                 ),
-            //               )
-            //             : buttomZoomOut.value < 300.0
-            //                 ? new CircularProgressIndicator(
-            //                     value: null,
-            //                     strokeWidth: 1.0,
-            //                     valueColor: new AlwaysStoppedAnimation<Color>(
-            //                         Colors.white),
-            //                   )
-            //                 : null)
-            //     : new Container(
-            //         width: buttomZoomOut.value,
-            //         height: buttomZoomOut.value,
-            //         decoration: new BoxDecoration(
-            //           shape: buttomZoomOut.value < 500
-            //               ? BoxShape.circle
-            //               : BoxShape.rectangle,
-            //           color: const Color.fromRGBO(247, 64, 106, 1.0),
-            //         ),
-            //       ),
+                    : new CircularProgressIndicator(
+                        value: null,
+                        strokeWidth: 1.0,
+                        valueColor:
+                            new AlwaysStoppedAnimation<Color>(Colors.white),
+                      )),
           )),
+
+      // padding: buttomZoomOut.value == 70
+      //     ? const EdgeInsets.only(bottom: 50.0)
+      //     : containerCircleAnimation.value,
+      // child: new InkWell(
+      //     onTap: () {
+      //       _playAnimation();
+      //     },
+      //     child: new Hero(
+      //       tag: "fade",
+      //       child: new Container(
+      //           width: buttomZoomOut.value == 70
+      //               ? buttonSqueezeanimation.value
+      //               : buttomZoomOut.value,
+      //           height: buttomZoomOut.value == 70 ? 60.0 : buttomZoomOut.value,
+      //           alignment: FractionalOffset.center,
+      //           decoration: new BoxDecoration(
+      //             color: AppTheme.primaryColor,
+      //             borderRadius: buttomZoomOut.value < 400
+      //                 ? new BorderRadius.all(const Radius.circular(30.0))
+      //                 : new BorderRadius.all(const Radius.circular(0.0)),
+      //           ),
+      //           child: buttonSqueezeanimation.value > 75.0
+      //               ? new Text(
+      //                   "Sign In",
+      //                   style: new TextStyle(
+      //                     color: Colors.white,
+      //                     fontSize: 20.0,
+      //                     fontWeight: FontWeight.w300,
+      //                     letterSpacing: 0.3,
+      //                   ),
+      //                 )
+      //               : buttomZoomOut.value < 300.0
+      //                   ? new CircularProgressIndicator(
+      //                       value: null,
+      //                       strokeWidth: 1.0,
+      //                       valueColor:
+      //                           new AlwaysStoppedAnimation<Color>(Colors.white),
+      //                     )
+      //                   : null),
+      //     )),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    buttonController.addListener(() {
-      if (buttonController.isCompleted) {
-        Navigator.push(context, MaterialPageRoute(builder: (BuildContext) {
-          return Index();
-        }));
-        //Navigator.pushNamed(context, "/home");
-      }
-    });
     return new AnimatedBuilder(
       builder: _buildAnimation,
       animation: buttonController,

@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   http:
+  dio:
   rxdart:
   common_utils:
   cupertino_icons:

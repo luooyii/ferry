@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 import 'styles.dart';
 import 'login_animation.dart';
 import 'package:flutter/animation.dart';
@@ -6,6 +7,7 @@ import 'dart:async';
 import '../../widget/signup_link.dart';
 import '../../widget/button/signin_button.dart';
 import '../../widget/form/form.dart';
+import '../index/index.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 
@@ -21,7 +23,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _loginButtonController = new AnimationController(
-        duration: new Duration(milliseconds: 3000), vsync: this);
+        duration: new Duration(seconds: 30), vsync: this);
   }
 
   @override
@@ -60,6 +62,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    _addControllerListener();
     timeDilation = 0.4;
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
     return (new WillPopScope(
@@ -118,5 +121,41 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                     ],
                   ))),
         )));
+  }
+
+  void showSnackBar(String message) {
+    final snackBar = new SnackBar(
+      content: new Text(message),
+      backgroundColor: Color(0xffc91b3a),
+      duration: Duration(seconds: 3), // 持续时间
+      //animation,
+    );
+    Scaffold.of(context).showSnackBar(snackBar);
+  }
+
+  void _addControllerListener() {
+    _loginButtonController.addListener(() {
+      if (_loginButtonController.isCompleted) {
+        Navigator.push(context, MaterialPageRoute(builder: (BuildContext) {
+          return Index();
+        }));
+        //Navigator.pushNamed(context, "/home");
+      }
+    });
+  }
+
+  void getHttp() async {
+    try {
+      Response response;
+      var data = {'username': 'luooyii', 'password': 'luooyii'};
+      response = await Dio()
+          .get("http://132.232.22.168:8080/ferry/users", queryParameters: data);
+
+
+      showSnackBar(response.toString());
+      return print(response);
+    } catch (e) {
+      return print(e);
+    }
   }
 }
