@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:amap_base/amap_base.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import '../../../utils/ui/amap_misc.dart';
 import '../../../utils/ui/amap_view.dart';
 
@@ -94,10 +93,6 @@ class _ShipOrientationState extends State<ShipOrientation> {
         },
         amapOptions: AMapOptions(
           mapType: MAP_TYPE_SATELLITE,
-          // scrollGesturesEnabled: false,
-          // zoomGesturesEnabled: false,
-          // tiltGesturesEnabled: false,
-          // rotateGesturesEnabled: false,
         ),
       ),
     );

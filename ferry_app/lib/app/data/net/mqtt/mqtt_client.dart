@@ -7,6 +7,7 @@ class ConnectMqtt {
       : client = MqttClient(server, clientIdentifier);
 
   void connectMqttServer(String mqttTopic) async {
+
     client.logging(on: false);
     client.keepAlivePeriod = 20;
     client.onDisconnected = onDisconnected;
@@ -16,11 +17,10 @@ class ConnectMqtt {
     final MqttConnectMessage connMess = MqttConnectMessage()
         .withClientIdentifier('Mqtt_MyClientUniqueId')
         .keepAliveFor(20) // Must agree with the keep alive set above or not set
-        .withWillTopic(
-            'willtopic') // If you set this you must set a will message
+        .withWillTopic('willtopic') // If you set this you must set a will message
         .withWillMessage('My Will message')
         .startClean() // Non persistent session for testing
-        .withWillQos(MqttQos.atLeastOnce);
+        .withWillQos(MqttQos.exactlyOnce);
 
     print('EXAMPLE::Mosquitto client connecting....');
     client.connectionMessage = connMess;

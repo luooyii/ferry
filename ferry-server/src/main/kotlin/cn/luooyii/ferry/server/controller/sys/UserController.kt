@@ -26,7 +26,7 @@ class UserController {
         log.debug("The method is ending")
         val userEntity = userService!!.getUserEntityByLoginName(username)
         return if (userEntity == null) {
-            ResponseWrapper("200", "没有该用户", null)
+            ResponseWrapper("204", "没有该用户", null)
         } else {
             if (userEntity.password != null && userEntity.password == password) {
                 ResponseWrapper("200", "success", userEntity)

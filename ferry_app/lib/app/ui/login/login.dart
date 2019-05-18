@@ -18,56 +18,63 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   AnimationController _loginButtonController;
+  AnimationController _loginSuccessController;
   var animationStatus = 0;
+  final _scaffoldkey = new GlobalKey<ScaffoldState>();
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     _loginButtonController = new AnimationController(
-        duration: new Duration(seconds: 30), vsync: this);
+      duration: new Duration(seconds: 1),
+      vsync: this,
+    );
+    _loginSuccessController = new AnimationController(
+      duration: new Duration(seconds: 1),
+      vsync: this,
+    );
   }
 
   @override
   void dispose() {
     _loginButtonController.dispose();
+    _loginSuccessController.dispose();
     super.dispose();
   }
 
   Future<Null> _playAnimation() async {
     try {
       await _loginButtonController.forward();
-      await _loginButtonController.reverse();
     } on TickerCanceled {}
   }
 
+  int _lastClickTime = 0;
   Future<bool> _onWillPop() {
-    return showDialog(
-          context: context,
-          child: new AlertDialog(
-            title: new Text('Are you sure?'),
-            actions: <Widget>[
-              new FlatButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: new Text('No'),
-              ),
-              new FlatButton(
-                onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/home"),
-                child: new Text('Yes'),
-              ),
-            ],
-          ),
-        ) ??
-        false;
+    showSnackBar("再按一次返回键退出Ferry", 2);
+
+    int nowTime = new DateTime.now().microsecondsSinceEpoch;
+    if (_lastClickTime != 0 && nowTime - _lastClickTime > 1500) {
+      //退出
+      return new Future.value(true);
+    } else {
+      _lastClickTime = new DateTime.now().microsecondsSinceEpoch;
+      new Future.delayed(const Duration(milliseconds: 1500), () {
+        _lastClickTime = 0;
+      });
+      return new Future.value(false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    _addControllerListener();
     timeDilation = 0.4;
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
     return (new WillPopScope(
         onWillPop: _onWillPop,
         child: new Scaffold(
+          key: _scaffoldkey,
           body: new Container(
               decoration: new BoxDecoration(
                 image: backgroundImage,
@@ -97,7 +104,10 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                   child: new Text("Ferry",
                                       style: TextStyle(
                                           color: Colors.white, fontSize: 95))),
-                              new FormContainer(),
+                              new FormContainer(
+                                usernameController: _usernameController,
+                                passwordController: _passwordController,
+                              ),
                               new SignUp()
                             ],
                           ),
@@ -110,12 +120,19 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                           animationStatus = 1;
                                         });
                                         _playAnimation();
+                                        _loginSync();
                                       },
                                       child: new SignIn()),
                                 )
-                              : new StaggerAnimation(
-                                  buttonController:
-                                      _loginButtonController.view),
+                              : animationStatus == 1
+                                  ? StaggerAnimation(
+                                      buttonController:
+                                          _loginButtonController.view,
+                                    )
+                                  : JumpAnimation(
+                                      successController:
+                                          _loginSuccessController,
+                                    ),
                         ],
                       ),
                     ],
@@ -123,39 +140,81 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         )));
   }
 
-  void showSnackBar(String message) {
+  void showSnackBar(String message, int durationSecond) {
     final snackBar = new SnackBar(
-      content: new Text(message),
-      backgroundColor: Color(0xffc91b3a),
-      duration: Duration(seconds: 3), // 持续时间
-      //animation,
+      content: new Text(
+        message,
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 16),
+      ),
+      backgroundColor: Color(0x5f009688),
+      duration: Duration(seconds: durationSecond), // 持续时间
     );
-    Scaffold.of(context).showSnackBar(snackBar);
+    _scaffoldkey.currentState.showSnackBar(snackBar);
   }
 
-  void _addControllerListener() {
-    _loginButtonController.addListener(() {
-      if (_loginButtonController.isCompleted) {
-        Navigator.push(context, MaterialPageRoute(builder: (BuildContext) {
-          return Index();
-        }));
-        //Navigator.pushNamed(context, "/home");
-      }
-    });
-  }
+  var username;
+  var password;
 
-  void getHttp() async {
+  void _loginSync() async {
     try {
       Response response;
-      var data = {'username': 'luooyii', 'password': 'luooyii'};
+      var data = {
+        'username': _usernameController.text,
+        'password': _passwordController.text
+      };
       response = await Dio()
           .get("http://132.232.22.168:8080/ferry/users", queryParameters: data);
 
+      print(response);
+      if (response.data['status'] == "200") {
+        if (response.data['data'] != null) {
+          _loginButtonController.addStatusListener((status) {
+            if (status == AnimationStatus.completed) {
+              setState(() {
+                animationStatus = 2;
+              });
+              _loginSuccessController.addStatusListener((status) {
+                if (status == AnimationStatus.completed) {
+                  Navigator.pushAndRemoveUntil(context,
+                      MaterialPageRoute(builder: (BuildContext context) {
+                    return Index(response.data['data']);
+                  }), (route) => route == null);
+                }
+              });
+              _loginSuccessController.forward();
+            }
+          });
+          return;
+        } else {
+          showSnackBar(response.data['message'], 3);
+        }
+      } else {
+        showSnackBar("未知错误", 3);
+      }
 
-      showSnackBar(response.toString());
-      return print(response);
+      _loginButtonController.addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          _loginButtonController.reverse();
+          setState(() {
+            animationStatus = 0;
+          });
+        }
+      });
+
+      // if (response.data['status'] == 200) {
+      //   if (response.data.data != null) {
+      //     Navigator.pushNamed(context, "/ship/console");
+      //   } else {
+      //     showSnackBar("密码错误", 3);
+      //   }
+      // } else if (response.data['status'] == 204) {
+      //   showSnackBar("用户不存在", 3);
+      // } else {
+      //   showSnackBar("未知错误", 3);
+      // }
     } catch (e) {
-      return print(e);
+      print(e);
     }
   }
 }

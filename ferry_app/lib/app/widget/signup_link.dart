@@ -10,7 +10,7 @@ class SignUp extends StatelessWidget {
       ),
       onPressed: null,
       child: new Text(
-        "Don't have an account? Sign Up",
+        "账户不存在？点击此处联系管理员",
         textAlign: TextAlign.center,
         overflow: TextOverflow.ellipsis,
         softWrap: true,

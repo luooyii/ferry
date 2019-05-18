@@ -6,7 +6,7 @@ class SignIn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return (new Container(
-      width: 320.0,
+      width: 300.0,
       height: 60.0,
       alignment: FractionalOffset.center,
       decoration: new BoxDecoration(
@@ -14,11 +14,11 @@ class SignIn extends StatelessWidget {
         borderRadius: new BorderRadius.all(const Radius.circular(30.0)),
       ),
       child: new Text(
-        "Sign In",
+        "登录",
         style: new TextStyle(
           color: Colors.white,
           fontSize: 20.0,
-          fontWeight: FontWeight.w300,
+          //fontWeight: FontWeight.w300,
           letterSpacing: 0.3,
         ),
       ),

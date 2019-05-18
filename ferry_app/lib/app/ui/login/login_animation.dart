@@ -1,3 +1,4 @@
+import 'package:ferry_app/app/ui/index/index.dart';
 import 'package:flutter/material.dart';
 import '../../../common/theme.dart';
 import 'dart:async';
@@ -12,24 +13,10 @@ class StaggerAnimation extends StatelessWidget {
             parent: buttonController,
             curve: new Interval(
               0.0,
-              0.150,
+              0.5,
             ),
           ),
         ),
-        // buttomZoomOut = new Tween(
-        //   begin: 70.0,
-        //   end: 1000.0,
-        // ).animate(
-        //   new CurvedAnimation(
-        //     parent: buttonController,
-        //     curve: new Interval(
-        //       0.550,
-        //       0.999,
-        //       curve: Curves.bounceOut,
-        //     ),
-        //   ),
-        // ),
-        //EdgeInsetsTween位移
         containerCircleAnimation = new EdgeInsetsTween(
           begin: const EdgeInsets.only(bottom: 50.0),
           end: const EdgeInsets.only(bottom: 0.0),
@@ -46,23 +33,15 @@ class StaggerAnimation extends StatelessWidget {
         super(key: key);
 
   final AnimationController buttonController;
-  final Animation<EdgeInsets> containerCircleAnimation; //加载动画
-  final Animation buttonSqueezeanimation; //挤压动画
-  //final Animation buttomZoomOut; //滑动界面
-
-  Future<Null> _playAnimation() async {
-    try {
-      await buttonController.forward();
-      await buttonController.reverse();
-    } on TickerCanceled {}
-  }
+  final Animation<EdgeInsets> containerCircleAnimation;
+  final Animation buttonSqueezeanimation;
 
   Widget _buildAnimation(BuildContext context, Widget child) {
     return new Padding(
       padding: const EdgeInsets.only(bottom: 50.0),
       child: new InkWell(
           onTap: () {
-            _playAnimation();
+            //_playAnimation();
           },
           child: new Hero(
             tag: "fade",
@@ -77,7 +56,7 @@ class StaggerAnimation extends StatelessWidget {
                 ),
                 child: buttonSqueezeanimation.value > 75.0
                     ? new Text(
-                        "Sign In",
+                        "登录",
                         style: new TextStyle(
                           color: Colors.white,
                           fontSize: 20.0,
@@ -92,47 +71,6 @@ class StaggerAnimation extends StatelessWidget {
                             new AlwaysStoppedAnimation<Color>(Colors.white),
                       )),
           )),
-
-      // padding: buttomZoomOut.value == 70
-      //     ? const EdgeInsets.only(bottom: 50.0)
-      //     : containerCircleAnimation.value,
-      // child: new InkWell(
-      //     onTap: () {
-      //       _playAnimation();
-      //     },
-      //     child: new Hero(
-      //       tag: "fade",
-      //       child: new Container(
-      //           width: buttomZoomOut.value == 70
-      //               ? buttonSqueezeanimation.value
-      //               : buttomZoomOut.value,
-      //           height: buttomZoomOut.value == 70 ? 60.0 : buttomZoomOut.value,
-      //           alignment: FractionalOffset.center,
-      //           decoration: new BoxDecoration(
-      //             color: AppTheme.primaryColor,
-      //             borderRadius: buttomZoomOut.value < 400
-      //                 ? new BorderRadius.all(const Radius.circular(30.0))
-      //                 : new BorderRadius.all(const Radius.circular(0.0)),
-      //           ),
-      //           child: buttonSqueezeanimation.value > 75.0
-      //               ? new Text(
-      //                   "Sign In",
-      //                   style: new TextStyle(
-      //                     color: Colors.white,
-      //                     fontSize: 20.0,
-      //                     fontWeight: FontWeight.w300,
-      //                     letterSpacing: 0.3,
-      //                   ),
-      //                 )
-      //               : buttomZoomOut.value < 300.0
-      //                   ? new CircularProgressIndicator(
-      //                       value: null,
-      //                       strokeWidth: 1.0,
-      //                       valueColor:
-      //                           new AlwaysStoppedAnimation<Color>(Colors.white),
-      //                     )
-      //                   : null),
-      //     )),
     );
   }
 
@@ -141,6 +79,58 @@ class StaggerAnimation extends StatelessWidget {
     return new AnimatedBuilder(
       builder: _buildAnimation,
       animation: buttonController,
+    );
+  }
+}
+
+class JumpAnimation extends StatelessWidget {
+  JumpAnimation({Key key, this.successController})
+      : buttomZoomOut = new Tween(
+          begin: 70.0,
+          end: 1000.0,
+        ).animate(
+          new CurvedAnimation(
+            parent: successController,
+            curve: Curves.bounceOut,
+          ),
+        ),
+        super(key: key);
+
+  final AnimationController successController;
+  final Animation buttomZoomOut;
+
+  Widget _buildAnimation(BuildContext context, Widget child) {
+    return new Padding(
+      padding: const EdgeInsets.only(bottom: 0.0),
+      child: new InkWell(
+          child: new Hero(
+        tag: "fade",
+        child: new Container(
+            width: buttomZoomOut.value,
+            height: buttomZoomOut.value,
+            alignment: FractionalOffset.center,
+            decoration: new BoxDecoration(
+              color: AppTheme.primaryColor,
+              borderRadius: buttomZoomOut.value < 400
+                  ? new BorderRadius.all(const Radius.circular(30.0))
+                  : new BorderRadius.all(const Radius.circular(0.0)),
+            ),
+            child: buttomZoomOut.value < 300.0
+                ? new CircularProgressIndicator(
+                    value: null,
+                    strokeWidth: 1.0,
+                    valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
+                  )
+                : null),
+      )),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new AnimatedBuilder(
+      builder: _buildAnimation,
+      animation: successController,
     );
   }
 }

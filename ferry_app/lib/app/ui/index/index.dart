@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import '../../../common/theme.dart';
 import '../../../common/const.dart';
@@ -6,15 +8,20 @@ import '../ship_console/ship_console.dart';
 import '../user_center/user_center.dart';
 
 class Index extends StatefulWidget {
+  final LinkedHashMap userInfo;
+  Index(this.userInfo);
   @override
-  State<Index> createState() => _IndexState();
+  State<Index> createState() => _IndexState(userInfo);
 }
 
 class _IndexState extends State<Index> with TickerProviderStateMixin {
   int _currentIndex = 0;
+  final _scaffoldkey = new GlobalKey<ScaffoldState>();
+  final LinkedHashMap userInfo;
   List<NavigationIconView> _navigationViews; //底部导航栏中的内容
   List<Widget> _pages; //底部导航栏指向的页面
   Widget _currentPage;
+  _IndexState(this.userInfo);
 
   @override
   void initState() {
@@ -66,12 +73,16 @@ class _IndexState extends State<Index> with TickerProviderStateMixin {
           });
         });
 
-    return MaterialApp(
-        home: new Scaffold(
-          body: new Center(child: _currentPage),
-          bottomNavigationBar: bottomNavigationBar,
-        ),
-        theme: AppTheme.themeData);
+    return new WillPopScope(
+      onWillPop: _onWillPop,
+      child: MaterialApp(
+          home: Scaffold(
+            key: _scaffoldkey,
+            body: Center(child: _currentPage),
+            bottomNavigationBar: bottomNavigationBar,
+          ),
+          theme: AppTheme.themeData),
+    );
   }
 
   @override
@@ -80,5 +91,35 @@ class _IndexState extends State<Index> with TickerProviderStateMixin {
     for (NavigationIconView view in _navigationViews) {
       view.controller.dispose();
     }
+  }
+
+  int _lastClickTime = 0;
+  Future<bool> _onWillPop() {
+    showSnackBar("再按一次返回键退出Ferry", 2);
+
+    int nowTime = new DateTime.now().microsecondsSinceEpoch;
+    if (_lastClickTime != 0 && nowTime - _lastClickTime > 1500) {
+      //退出
+      return new Future.value(true);
+    } else {
+      _lastClickTime = new DateTime.now().microsecondsSinceEpoch;
+      new Future.delayed(const Duration(milliseconds: 1500), () {
+        _lastClickTime = 0;
+      });
+      return new Future.value(false);
+    }
+  }
+
+  void showSnackBar(String message, int durationSecond) {
+    final snackBar = new SnackBar(
+      content: new Text(
+        message,
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 16),
+      ),
+      backgroundColor: Color(0x5f009688),
+      duration: Duration(seconds: durationSecond), // 持续时间
+    );
+    _scaffoldkey.currentState.showSnackBar(snackBar);
   }
 }

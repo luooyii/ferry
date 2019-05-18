@@ -15,9 +15,8 @@ dependencies:
   common_utils:
   cupertino_icons:
   mqtt_client:
-  web_socket_channel:
   charts_flutter:
-  fluttertoast:
+  #fluttertoast:
   #高德地图
   amap_base:
 
