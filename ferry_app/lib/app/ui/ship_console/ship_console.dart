@@ -1,3 +1,4 @@
+import 'package:ferry_app/app/data/net/mqtt/ferry_mqtt_client.dart';
 import 'package:flutter/material.dart';
 import '../../../common/color.dart';
 import 'console_attitude.dart';
@@ -5,11 +6,25 @@ import 'console_orientation.dart';
 import 'console_power.dart';
 
 class ShipConsole extends StatefulWidget {
+  final GlobalKey<ScaffoldState> _scaffoldkey;
+  ShipConsole(this._scaffoldkey);
+
   @override
-  _ShipConsoleState createState() => _ShipConsoleState();
+  _ShipConsoleState createState() => _ShipConsoleState(_scaffoldkey);
 }
 
 class _ShipConsoleState extends State<ShipConsole> {
+  FerryMqttClient mqttClient = FerryMqttClient.getInstance();
+
+  final GlobalKey<ScaffoldState> _scaffoldkey;
+  _ShipConsoleState(this._scaffoldkey);
+
+  @override
+  void initState() {
+    super.initState();
+    mqttClient.connect();
+  }
+
   @override
   Widget build(BuildContext context) {
     return new DefaultTabController(
@@ -29,8 +44,11 @@ class _ShipConsoleState extends State<ShipConsole> {
           ),
         ),
         drawer: new Drawer(),
-        body: new TabBarView(
-            children: [ShipPower(), ShipOrientation(), ShipAttitude()]),
+        body: new TabBarView(children: [
+          ShipPower(_scaffoldkey),
+          ShipOrientation(),
+          ShipAttitude()
+        ]),
       ),
     );
   }

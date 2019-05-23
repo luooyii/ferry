@@ -8,7 +8,6 @@ import "../../../common/uri.dart";
 import '../../data/entity/chart/point.dart';
 
 class ShipConsoleBloc {
-  final MqttClient client = MqttClient(mqttServer, '');
 
   List<common.Series<ChartPoint, int>> lineChartData;
   final _attitudeSubject = BehaviorSubject<List>();

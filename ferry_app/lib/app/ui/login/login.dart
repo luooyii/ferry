@@ -169,22 +169,30 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       print(response);
       if (response.data['status'] == "200") {
         if (response.data['data'] != null) {
-          _loginButtonController.addStatusListener((status) {
+          if (_loginButtonController.isCompleted) {
+            setState(() {
+              animationStatus = 2;
+            });
+          } else {
+            _loginButtonController.addStatusListener((status) {
+              if (status == AnimationStatus.completed) {
+                setState(() {
+                  animationStatus = 2;
+                });
+              }
+            });
+          }
+
+          _loginSuccessController.addStatusListener((status) {
             if (status == AnimationStatus.completed) {
-              setState(() {
-                animationStatus = 2;
-              });
-              _loginSuccessController.addStatusListener((status) {
-                if (status == AnimationStatus.completed) {
-                  Navigator.pushAndRemoveUntil(context,
-                      MaterialPageRoute(builder: (BuildContext context) {
-                    return Index(response.data['data']);
-                  }), (route) => route == null);
-                }
-              });
-              _loginSuccessController.forward();
+              Navigator.pushAndRemoveUntil(context,
+                  MaterialPageRoute(builder: (BuildContext context) {
+                return Index(response.data['data']);
+              }), (route) => route == null);
             }
           });
+
+          _loginSuccessController.forward();
           return;
         } else {
           showSnackBar(response.data['message'], 3);
@@ -193,14 +201,21 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         showSnackBar("未知错误", 3);
       }
 
-      _loginButtonController.addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          _loginButtonController.reverse();
-          setState(() {
-            animationStatus = 0;
-          });
-        }
-      });
+      if (_loginButtonController.isCompleted) {
+        _loginButtonController.reverse();
+        setState(() {
+          animationStatus = 0;
+        });
+      } else {
+        _loginButtonController.addStatusListener((status) {
+          if (status == AnimationStatus.completed) {
+            _loginButtonController.reverse();
+            setState(() {
+              animationStatus = 0;
+            });
+          }
+        });
+      }
 
       // if (response.data['status'] == 200) {
       //   if (response.data.data != null) {

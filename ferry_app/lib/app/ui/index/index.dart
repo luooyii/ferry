@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:ferry_app/app/data/net/mqtt/ferry_mqtt_client.dart';
 import 'package:flutter/material.dart';
 import '../../../common/theme.dart';
 import '../../../common/const.dart';
@@ -47,7 +48,7 @@ class _IndexState extends State<Index> with TickerProviderStateMixin {
     ];
     //初始化页面
     _pages = [
-      ShipConsole(),
+      ShipConsole(_scaffoldkey),
       UserCenter(),
     ];
     _currentPage = _pages[_currentIndex];
