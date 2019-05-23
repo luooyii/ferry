@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:convert';
+import 'package:ferry_app/app/bloc/ship_console_bloc.dart';
+import 'package:ferry_app/app/data/net/mqtt/ferry_mqtt_client.dart';
 import 'package:flutter/material.dart';
 import 'package:amap_base/amap_base.dart';
-import '../../../utils/ui/amap_misc.dart';
-import '../../../utils/ui/amap_view.dart';
+import 'package:mqtt_client/mqtt_client.dart';
 
 class ShipOrientation extends StatefulWidget {
   ShipOrientation();
@@ -14,46 +16,65 @@ class ShipOrientation extends StatefulWidget {
 }
 
 class _ShipOrientationState extends State<ShipOrientation> {
+  final ShipConsoleBloc shipConsoleBloc = ShipConsoleBloc.getInstance();
+  final FerryMqttClient mqttClient = FerryMqttClient.getInstance();
+  StreamSubscription periodicSub;
+  final String topic = 'cn/luooyii/ferry/ship/position';
+  
   AMapController _controller;
+  LatLng originalPosition;
 
   var random = Random();
   int i = 0;
 
-  _changePosition() {
-    LatLng(69.608, 18.895);
+  _subscribe() {
+    var isSubscribe = false;
+    periodicSub =
+        Stream.periodic(const Duration(seconds: 1)).take(10).listen((_) {
+      if (isSubscribe) return;
+      if (mqttClient.isConnected()) {
+        mqttClient.subscribeToTopic(topic);
+        mqttClient.addSubscribeLisener(_changePosition);
+        shipConsoleBloc.showSnackBar("已订阅航线Topic");
+        isSubscribe = true;
+      }
+    });
+  }
 
-    // //真实轨迹（红色实线）
-    // var _realPostition = [_postion[i], _postion[i + 1]];
-    // _controller.setPosition(target: _postion[i], zoom: 5);
-    // _controller.addPolyline(
-    //   PolylineOptions(
-    //     latLngList: _realPostition,
-    //     color: Colors.red[300],
-    //     isGeodesic: true,
-    //     lineCapType: PolylineOptions.LINE_CAP_TYPE_ROUND,
-    //     width: 15,
-    //   ),
-    // );
+  _changePosition(List<MqttReceivedMessage<MqttMessage>> event) {
+    if (event[0].topic != topic) return;
 
-    // //预测轨迹（蓝色虚线）
-    // var latng = _postion[i + 2];
-    // if (i == 6)
-    //   _forecastPostion.add(LatLng(latng.latitude, latng.longitude));
-    // else
-    //   _forecastPostion.add(LatLng(latng.latitude + random.nextDouble() * 0.5,
-    //       latng.longitude - random.nextDouble() * 0.5));
-    // var _forePostition = [_forecastPostion[i + 1], _forecastPostion[i + 2]];
-    // _controller.addPolyline(
-    //   PolylineOptions(
-    //     latLngList: _forePostition,
-    //     color: Colors.blue,
-    //     isGeodesic: true,
-    //     isDottedLine: true,
-    //     lineCapType: PolylineOptions.LINE_CAP_TYPE_ROUND,
-    //     width: 15,
-    //   ),
-    // );
-    // i++;
+    final MqttPublishMessage recMess = event[0].payload;
+    final String message =
+        MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
+    var result = json.decode(message);
+    debugPrint(result.toString());
+
+    LatLng position = LatLng(result[0], result[1]);
+    if (originalPosition == null) {
+      originalPosition = position;
+      return;
+    }
+
+    //真实轨迹（红色实线）
+    var _realPostition = [originalPosition, position];
+    _controller.setPosition(target: position, zoom: 5);
+    _controller.addPolyline(
+      PolylineOptions(
+        latLngList: _realPostition,
+        color: Colors.red[300],
+        isGeodesic: true,
+        lineCapType: PolylineOptions.LINE_CAP_TYPE_ROUND,
+        width: 15,
+      ),
+    );
+    originalPosition = position;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _subscribe();
   }
 
   @override
@@ -72,6 +93,9 @@ class _ShipOrientationState extends State<ShipOrientation> {
 
   @override
   void dispose() {
+    mqttClient.unsubscribeFromTopic(topic);
+    shipConsoleBloc.showSnackBar("取消订阅航线Topic");
+    periodicSub.cancel();
     if (_controller != null) _controller.dispose();
     super.dispose();
   }

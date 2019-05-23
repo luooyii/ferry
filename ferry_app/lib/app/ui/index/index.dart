@@ -1,6 +1,6 @@
 import 'dart:collection';
 
-import 'package:ferry_app/app/data/net/mqtt/ferry_mqtt_client.dart';
+import 'package:ferry_app/app/bloc/ship_console_bloc.dart';
 import 'package:flutter/material.dart';
 import '../../../common/theme.dart';
 import '../../../common/const.dart';
@@ -24,9 +24,14 @@ class _IndexState extends State<Index> with TickerProviderStateMixin {
   Widget _currentPage;
   _IndexState(this.userInfo);
 
+  final ShipConsoleBloc shipConsoleBloc = ShipConsoleBloc.getInstance();
+
   @override
   void initState() {
     super.initState();
+    shipConsoleBloc.snackMsgStream
+        .listen((String snackMsg) => showSnackBar(snackMsg, 1));
+
     //初始化底部导航栏里的内容
     _navigationViews = <NavigationIconView>[
       new NavigationIconView(
@@ -48,7 +53,7 @@ class _IndexState extends State<Index> with TickerProviderStateMixin {
     ];
     //初始化页面
     _pages = [
-      ShipConsole(_scaffoldkey),
+      ShipConsole(),
       UserCenter(),
     ];
     _currentPage = _pages[_currentIndex];
@@ -88,10 +93,11 @@ class _IndexState extends State<Index> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    super.dispose();
+    shipConsoleBloc.dispose();
     for (NavigationIconView view in _navigationViews) {
       view.controller.dispose();
     }
+    super.dispose();
   }
 
   int _lastClickTime = 0;

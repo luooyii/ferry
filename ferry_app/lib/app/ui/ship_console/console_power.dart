@@ -1,24 +1,25 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:ferry_app/app/bloc/ship_console_bloc.dart';
 import 'package:ferry_app/app/data/net/mqtt/ferry_mqtt_client.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
 
 class ShipPower extends StatefulWidget {
-  final GlobalKey<ScaffoldState> _scaffoldkey;
-  ShipPower(this._scaffoldkey);
+  ShipPower();
 
   @override
-  _ShipPowerState createState() => _ShipPowerState(_scaffoldkey);
+  _ShipPowerState createState() => _ShipPowerState();
 }
 
 class _ShipPowerState extends State<ShipPower> {
-  final GlobalKey<ScaffoldState> _scaffoldkey;
-  _ShipPowerState(this._scaffoldkey);
+  _ShipPowerState();
 
-  FerryMqttClient mqttClient = FerryMqttClient.getInstance();
+  final ShipConsoleBloc shipConsoleBloc = ShipConsoleBloc.getInstance();
+  final FerryMqttClient mqttClient = FerryMqttClient.getInstance();
   StreamSubscription periodicSub;
+  final String topic = 'edu/just/machinelearning/test/ship';
 
   final List<double> currentList = [];
   final List<double> voltageList = [];
@@ -31,10 +32,10 @@ class _ShipPowerState extends State<ShipPower> {
     periodicSub =
         Stream.periodic(const Duration(seconds: 1)).take(10).listen((_) {
       if (isSubscribe) return;
-      if (mqttClient.connectionState == MqttConnectionState.connected) {
-        mqttClient.subscribeToTopic('edu/just/machinelearning/test/ship');
+      if (mqttClient.isConnected()) {
+        mqttClient.subscribeToTopic(topic);
         mqttClient.addSubscribeLisener(_onMqttMessage);
-        showSnackBar("已订阅电力Topic", 1);
+        shipConsoleBloc.showSnackBar("已订阅电力Topic");
         isSubscribe = true;
       }
     });
@@ -47,7 +48,7 @@ class _ShipPowerState extends State<ShipPower> {
   }
 
   void _onMqttMessage(List<MqttReceivedMessage<MqttMessage>> event) {
-    if (event[0].topic != 'edu/just/machinelearning/test/ship') return;
+    if (event[0].topic != topic) return;
 
     final MqttPublishMessage recMess = event[0].payload;
     final String message =
@@ -71,7 +72,7 @@ class _ShipPowerState extends State<ShipPower> {
   Widget build(BuildContext context) {
     seriesList = [
       new charts.Series<double, int>(
-        id: 'Desktop',
+        id: 'currentChart',
         colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
         domainFn: (value, index) => index,
         measureFn: (value, index) => value,
@@ -79,7 +80,7 @@ class _ShipPowerState extends State<ShipPower> {
         data: currentList,
       ),
       new charts.Series<double, int>(
-        id: 'Tablet',
+        id: 'voltageChart',
         colorFn: (_, __) => charts.MaterialPalette.red.shadeDefault,
         domainFn: (value, index) => index,
         measureFn: (value, index) => value,
@@ -87,7 +88,7 @@ class _ShipPowerState extends State<ShipPower> {
         data: voltageList,
       ),
       new charts.Series<double, int>(
-        id: 'Mobile',
+        id: 'powerChart',
         colorFn: (_, __) => charts.MaterialPalette.green.shadeDefault,
         domainFn: (value, index) => index,
         measureFn: (value, index) => value,
@@ -104,22 +105,9 @@ class _ShipPowerState extends State<ShipPower> {
 
   @override
   void dispose() {
-    mqttClient.unsubscribeFromTopic('edu/just/machinelearning/test/ship');
-    showSnackBar("取消订阅电力Topic", 1);
+    mqttClient.unsubscribeFromTopic(topic);
+    shipConsoleBloc.showSnackBar("取消订阅电力Topic");
     periodicSub.cancel();
     super.dispose();
-  }
-
-  void showSnackBar(String message, int durationSecond) {
-    final snackBar = new SnackBar(
-      content: new Text(
-        message,
-        textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 16),
-      ),
-      backgroundColor: Color(0x5f009688),
-      duration: Duration(seconds: durationSecond), // 持续时间
-    );
-    _scaffoldkey.currentState.showSnackBar(snackBar);
   }
 }

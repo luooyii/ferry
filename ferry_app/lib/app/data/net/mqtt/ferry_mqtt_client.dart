@@ -127,4 +127,8 @@ class FerryMqttClient {
       }
     }
   }
+
+  bool isConnected() {
+    return connectionState == mqtt.MqttConnectionState.connected;
+  }
 }

@@ -6,22 +6,20 @@ import 'console_orientation.dart';
 import 'console_power.dart';
 
 class ShipConsole extends StatefulWidget {
-  final GlobalKey<ScaffoldState> _scaffoldkey;
-  ShipConsole(this._scaffoldkey);
+  ShipConsole();
 
   @override
-  _ShipConsoleState createState() => _ShipConsoleState(_scaffoldkey);
+  _ShipConsoleState createState() => _ShipConsoleState();
 }
 
 class _ShipConsoleState extends State<ShipConsole> {
   FerryMqttClient mqttClient = FerryMqttClient.getInstance();
 
-  final GlobalKey<ScaffoldState> _scaffoldkey;
-  _ShipConsoleState(this._scaffoldkey);
+  _ShipConsoleState();
 
   @override
   void initState() {
-    super.initState();
+    super.initState();    
     mqttClient.connect();
   }
 
@@ -45,11 +43,16 @@ class _ShipConsoleState extends State<ShipConsole> {
         ),
         drawer: new Drawer(),
         body: new TabBarView(children: [
-          ShipPower(_scaffoldkey),
+          ShipPower(),
           ShipOrientation(),
           ShipAttitude()
         ]),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }
