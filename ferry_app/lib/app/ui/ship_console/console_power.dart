@@ -21,9 +21,8 @@ class _ShipPowerState extends State<ShipPower> {
   StreamSubscription periodicSub;
   final String topic = 'edu/just/machinelearning/test/ship';
 
-  final List<double> currentList = [];
-  final List<double> voltageList = [];
-  final List<double> powerList = [];
+  final List<double> currentList = [], voltageList = [], powerList = [];
+  double current = 0.0, voltage = 0.0, power = 0.0;
   List<charts.Series<double, int>> seriesList;
   int i = 0;
 
@@ -54,18 +53,22 @@ class _ShipPowerState extends State<ShipPower> {
     final String message =
         MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
     var result = json.decode(message);
-    debugPrint(result.toString());
 
-    voltageList.add(result[0][0]);
-    currentList.add(result[0][1]);
-    powerList.add(result[0][2]);
-    if (currentList.length > 11) {
-      currentList.removeAt(0);
-      voltageList.removeAt(0);
-      powerList.removeAt(0);
-    }
-    i++;
-    setState(() {});
+    setState(() {
+      voltage = result[0][0];
+      voltageList.add(voltage);
+      current = result[0][1];
+      currentList.add(current);
+      power = result[0][2];
+      powerList.add(power);
+
+      if (currentList.length > 11) {
+        currentList.removeAt(0);
+        voltageList.removeAt(0);
+        powerList.removeAt(0);
+      }
+      i++;
+    });
   }
 
   @override
@@ -97,10 +100,42 @@ class _ShipPowerState extends State<ShipPower> {
       ),
     ];
 
-    return new charts.LineChart(seriesList,
-        defaultRenderer:
-            new charts.LineRendererConfig(includeArea: true, stacked: true),
-        animate: false);
+    return Column(
+      children: <Widget>[
+        Container(
+          height: 420,
+          child: charts.LineChart(seriesList,
+              defaultRenderer: new charts.LineRendererConfig(
+                  includeArea: true, stacked: true),
+              animate: false),
+        ),
+        new SizedBox(
+          height: 15,
+        ),
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: Text('电流 ${current}',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18, color: Colors.blue)),
+              flex: 1,
+            ),
+            Expanded(
+              child: Text('功率 ${power}',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18, color: Colors.green)),
+              flex: 1,
+            ),
+            Expanded(
+              child: Text('功率 ${power}',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18, color: Colors.red)),
+              flex: 1,
+            ),
+          ],
+        ),
+      ],
+    );
   }
 
   @override

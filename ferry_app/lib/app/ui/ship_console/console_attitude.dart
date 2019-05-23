@@ -25,7 +25,7 @@ class _ShipAttitudeState extends State<ShipAttitude> {
   final ShipConsoleBloc shipConsoleBloc = ShipConsoleBloc.getInstance();
   final FerryMqttClient mqttClient = FerryMqttClient.getInstance();
   StreamSubscription periodicSub;
-  final String topic = '/adxl345';
+  final String topic = '/just/adxl345/angel';
 
   _subscribe() {
     var isSubscribe = false;
@@ -51,8 +51,11 @@ class _ShipAttitudeState extends State<ShipAttitude> {
     debugPrint(result.toString());
 
     setState(() {
-      angleX = _previousX + result[0];
-      angleY = _previousY + result[1];
+      xAxis = double.parse(result[0]);
+      yAxis = double.parse(result[1]);
+      zAxis = double.parse(result[2]);
+      angleX = _previousX + xAxis;
+      angleY = _previousY + yAxis;
     });
   }
 
@@ -78,6 +81,10 @@ class _ShipAttitudeState extends State<ShipAttitude> {
 
   //bool useInternal;
 
+  double xAxis = 0.0;
+  double yAxis = 0.0;
+  double zAxis = 0.0;
+
   double angleX = 80.1630859375;
   double angleY = 37.806640625;
   double angleZ = 0.0;
@@ -92,10 +99,17 @@ class _ShipAttitudeState extends State<ShipAttitude> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: new _ObjectPainter(
-          widget.size, object, angleX, angleY, angleZ, widget.zoom),
-      size: widget.size,
+    return Column(
+      children: <Widget>[
+        CustomPaint(
+          painter: new _ObjectPainter(
+              widget.size, object, angleX, angleY, angleZ, widget.zoom),
+          size: widget.size,
+        ),
+        Text('X轴 ${xAxis}', style: TextStyle(fontSize: 18)),
+        Text('Y轴 ${yAxis}', style: TextStyle(fontSize: 18)),
+        Text('Z轴 ${zAxis}', style: TextStyle(fontSize: 18)),
+      ],
     );
   }
 }

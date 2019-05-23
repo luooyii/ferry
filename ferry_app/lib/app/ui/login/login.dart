@@ -1,3 +1,4 @@
+import 'package:ferry_app/app/data/entity/sys_user.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'styles.dart';
@@ -187,7 +188,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
             if (status == AnimationStatus.completed) {
               Navigator.pushAndRemoveUntil(context,
                   MaterialPageRoute(builder: (BuildContext context) {
-                return Index(response.data['data']);
+                return Index(SysUser.fromJson(response.data['data']));
               }), (route) => route == null);
             }
           });

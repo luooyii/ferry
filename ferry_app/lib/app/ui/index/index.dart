@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:ferry_app/app/bloc/ship_console_bloc.dart';
+import 'package:ferry_app/app/data/entity/sys_user.dart';
 import 'package:flutter/material.dart';
 import '../../../common/theme.dart';
 import '../../../common/const.dart';
@@ -9,20 +10,21 @@ import '../ship_console/ship_console.dart';
 import '../user_center/user_center.dart';
 
 class Index extends StatefulWidget {
-  final LinkedHashMap userInfo;
-  Index(this.userInfo);
+  //final LinkedHashMap userInfo;
+  final SysUser sysUser;
+  Index(this.sysUser);
   @override
-  State<Index> createState() => _IndexState(userInfo);
+  State<Index> createState() => _IndexState(sysUser);
 }
 
 class _IndexState extends State<Index> with TickerProviderStateMixin {
   int _currentIndex = 0;
   final _scaffoldkey = new GlobalKey<ScaffoldState>();
-  final LinkedHashMap userInfo;
+  final SysUser sysUser;
   List<NavigationIconView> _navigationViews; //底部导航栏中的内容
   List<Widget> _pages; //底部导航栏指向的页面
   Widget _currentPage;
-  _IndexState(this.userInfo);
+  _IndexState(this.sysUser);
 
   final ShipConsoleBloc shipConsoleBloc = ShipConsoleBloc.getInstance();
 
@@ -31,6 +33,7 @@ class _IndexState extends State<Index> with TickerProviderStateMixin {
     super.initState();
     shipConsoleBloc.snackMsgStream
         .listen((String snackMsg) => showSnackBar(snackMsg, 1));
+    debugPrint('啦啦啦');
 
     //初始化底部导航栏里的内容
     _navigationViews = <NavigationIconView>[
@@ -53,8 +56,8 @@ class _IndexState extends State<Index> with TickerProviderStateMixin {
     ];
     //初始化页面
     _pages = [
-      ShipConsole(),
-      UserCenter(),
+      ShipConsole(sysUser),
+      UserCenter(sysUser),
     ];
     _currentPage = _pages[_currentIndex];
   }
@@ -68,6 +71,7 @@ class _IndexState extends State<Index> with TickerProviderStateMixin {
                 navigationIconView.item)
             .toList(),
         currentIndex: _currentIndex,
+        //backgroundColor: AppTheme.primaryColor,
         fixedColor: AppTheme.primaryColor,
         type: BottomNavigationBarType.fixed,
         onTap: (int index) {
@@ -83,7 +87,7 @@ class _IndexState extends State<Index> with TickerProviderStateMixin {
       onWillPop: _onWillPop,
       child: MaterialApp(
           home: Scaffold(
-            key: _scaffoldkey,
+            key: _scaffoldkey,            
             body: Center(child: _currentPage),
             bottomNavigationBar: bottomNavigationBar,
           ),
