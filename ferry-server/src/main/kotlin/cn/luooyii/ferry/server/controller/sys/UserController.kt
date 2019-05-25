@@ -23,7 +23,7 @@ class UserController {
     @GetMapping("/users")
     fun usersList(@RequestParam(value = "username", required = false) username: String,
                   @RequestParam(value = "password", required = false) password: String): ResponseWrapper<*> {
-        log.debug("The method is ending")
+        log.debug("获取用户${username}数据")
         val userEntity = userService!!.getUserEntityByLoginName(username)
         return if (userEntity == null) {
             ResponseWrapper("204", "没有该用户", null)

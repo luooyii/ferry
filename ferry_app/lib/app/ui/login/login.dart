@@ -154,20 +154,11 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     _scaffoldkey.currentState.showSnackBar(snackBar);
   }
 
-  var username;
-  var password;
-
   void _loginSync() async {
     try {
       Response response;
-      var data = {
-        'username': _usernameController.text,
-        'password': _passwordController.text
-      };
-      response = await Dio()
-          .get("http://132.232.22.168:8080/ferry/users", queryParameters: data);
-
-      print(response);
+      var data = {'username': _usernameController.text,'password': _passwordController.text};
+      response = await Dio().get("http://132.232.22.168:8080/ferry/users", queryParameters: data);
       if (response.data['status'] == "200") {
         if (response.data['data'] != null) {
           if (_loginButtonController.isCompleted) {
@@ -183,7 +174,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               }
             });
           }
-
           _loginSuccessController.addStatusListener((status) {
             if (status == AnimationStatus.completed) {
               Navigator.pushAndRemoveUntil(context,
@@ -192,7 +182,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               }), (route) => route == null);
             }
           });
-
           _loginSuccessController.forward();
           return;
         } else {

@@ -104,10 +104,7 @@ class _ShipPowerState extends State<ShipPower> {
       children: <Widget>[
         Container(
           height: 420,
-          child: charts.LineChart(seriesList,
-              defaultRenderer: new charts.LineRendererConfig(
-                  includeArea: true, stacked: true),
-              animate: false),
+          child: charts.LineChart(seriesList, animate: true),
         ),
         new SizedBox(
           height: 15,
@@ -121,15 +118,15 @@ class _ShipPowerState extends State<ShipPower> {
               flex: 1,
             ),
             Expanded(
-              child: Text('功率 ${power}',
+              child: Text('电压 ${voltage}',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 18, color: Colors.green)),
+                  style: TextStyle(fontSize: 18, color: Colors.red)),
               flex: 1,
             ),
             Expanded(
               child: Text('功率 ${power}',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 18, color: Colors.red)),
+                  style: TextStyle(fontSize: 18, color: Colors.green)),
               flex: 1,
             ),
           ],
