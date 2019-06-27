@@ -1,9 +1,0 @@
-docker build -t docker_ferry_server .
-docker run -d -p 8080:8080 docker_ferry_server
-http://132.232.22.168:8080/ferry/users?username=luooyiii&password=luooyii
-
-查看错误日志
-docker logs --since 30m 0da7d32d89e9
-
-docker rm 
-docker image rm 
