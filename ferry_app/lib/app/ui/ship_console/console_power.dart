@@ -34,7 +34,7 @@ class _ShipPowerState extends State<ShipPower> {
       if (mqttClient.isConnected()) {
         mqttClient.subscribeToTopic(topic);
         mqttClient.addSubscribeLisener(_onMqttMessage);
-        shipConsoleBloc.showSnackBar("已订阅电力Topic");
+        shipConsoleBloc.showSnackBar("已订阅姿态Topic");
         isSubscribe = true;
       }
     });
