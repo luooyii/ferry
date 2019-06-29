@@ -41,9 +41,9 @@ class _ShipConsoleState extends State<ShipConsole> {
             labelColor: Colors.white, //Color(AppColors.PrimaryColor),
             unselectedLabelColor: Colors.black12,
             tabs: [
-              new Tab(text: "动力"),
-              new Tab(text: "方位"),
               new Tab(text: "姿态"),
+              new Tab(text: "方位"),
+              new Tab(text: "预警"),
             ],
           ),
         ),

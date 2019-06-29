@@ -16,7 +16,7 @@ dependencies:
   cupertino_icons:
   mqtt_client:
   charts_flutter:
-  #fluttertoast:
+  assets_audio_player:
   #高德地图
   amap_base:
 
@@ -29,6 +29,7 @@ flutter:
 
   assets:
     - assets/image/login.jpg
+    - assets/audios/alert.mp3
     - assets/ship.obj
     
   fonts:

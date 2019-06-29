@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ferry_app/app/bloc/ship_console_bloc.dart';
 import 'package:ferry_app/app/data/net/mqtt/ferry_mqtt_client.dart';
 import 'package:mqtt_client/mqtt_client.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'dart:io';
 import 'dart:math' as Math;
 import 'dart:ui';
@@ -24,8 +25,9 @@ class ShipAttitude extends StatefulWidget {
 class _ShipAttitudeState extends State<ShipAttitude> {
   final ShipConsoleBloc shipConsoleBloc = ShipConsoleBloc.getInstance();
   final FerryMqttClient mqttClient = FerryMqttClient.getInstance();
+  final AssetsAudioPlayer _assetsAudioPlayer = AssetsAudioPlayer();
   StreamSubscription periodicSub;
-  final String topic = '/just/adxl345/angel';
+  final String topic = 'edu/just/ferry/attitude';
 
   _subscribe() {
     var isSubscribe = false;
@@ -51,11 +53,24 @@ class _ShipAttitudeState extends State<ShipAttitude> {
     debugPrint(result.toString());
 
     setState(() {
-      xAxis = double.parse(result[0]);
-      yAxis = double.parse(result[1]);
-      zAxis = double.parse(result[2]);
+      xAxis = result[0];
+      yAxis = result[1];
+      zAxis = result[2];
       angleX = _previousX + xAxis;
       angleY = _previousY + yAxis;
+      if (xAxis > 30 || yAxis > 30 || xAxis < -30 || yAxis < -30) {
+        _assetsAudioPlayer.play();
+        showDialog(
+          context: context,
+          barrierDismissible: true, //点击dialog外部 是否可以销毁
+          builder: (BuildContext context) {
+            return SimpleDialog(
+              title: Text("船要翻啦！！！"),
+              children: <Widget>[],
+            );
+          },
+        );
+      }
     });
   }
 
@@ -69,10 +84,19 @@ class _ShipAttitudeState extends State<ShipAttitude> {
         object = value;
       });
     });
+
+    _assetsAudioPlayer.open(
+      AssetsAudio(
+        asset: "alert.mp3",
+        folder: "assets/audios/",
+      ),
+    );
+    _assetsAudioPlayer.seek(Duration(milliseconds: 2036));
   }
 
   @override
   void dispose() {
+    _assetsAudioPlayer.stop();
     mqttClient.unsubscribeFromTopic(topic);
     shipConsoleBloc.showSnackBar("取消订阅姿态Topic");
     periodicSub.cancel();

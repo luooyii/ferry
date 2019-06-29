@@ -19,7 +19,7 @@ class _ShipPowerState extends State<ShipPower> {
   final ShipConsoleBloc shipConsoleBloc = ShipConsoleBloc.getInstance();
   final FerryMqttClient mqttClient = FerryMqttClient.getInstance();
   StreamSubscription periodicSub;
-  final String topic = 'edu/just/machinelearning/test/ship';
+  final String topic = 'edu/just/ferry/attitude';
 
   final List<double> currentList = [], voltageList = [], powerList = [];
   double current = 0.0, voltage = 0.0, power = 0.0;
@@ -55,11 +55,11 @@ class _ShipPowerState extends State<ShipPower> {
     var result = json.decode(message);
 
     setState(() {
-      voltage = result[0][0];
+      voltage = result[0];
       voltageList.add(voltage);
-      current = result[0][1];
+      current = result[1];
       currentList.add(current);
-      power = result[0][2];
+      power = result[2];
       powerList.add(power);
 
       if (currentList.length > 11) {
@@ -79,7 +79,7 @@ class _ShipPowerState extends State<ShipPower> {
         colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
         domainFn: (value, index) => index,
         measureFn: (value, index) => value,
-        displayName: '电流',
+        displayName: 'angle-x',
         data: currentList,
       ),
       new charts.Series<double, int>(
@@ -87,7 +87,7 @@ class _ShipPowerState extends State<ShipPower> {
         colorFn: (_, __) => charts.MaterialPalette.red.shadeDefault,
         domainFn: (value, index) => index,
         measureFn: (value, index) => value,
-        displayName: '电压',
+        displayName: 'angle-y',
         data: voltageList,
       ),
       new charts.Series<double, int>(
@@ -95,7 +95,7 @@ class _ShipPowerState extends State<ShipPower> {
         colorFn: (_, __) => charts.MaterialPalette.green.shadeDefault,
         domainFn: (value, index) => index,
         measureFn: (value, index) => value,
-        displayName: '功率',
+        displayName: 'angle-z',
         data: powerList,
       ),
     ];
@@ -112,19 +112,19 @@ class _ShipPowerState extends State<ShipPower> {
         Row(
           children: <Widget>[
             Expanded(
-              child: Text('电流 ${current}',
+              child: Text('angle-x ${current}',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 18, color: Colors.blue)),
               flex: 1,
             ),
             Expanded(
-              child: Text('电压 ${voltage}',
+              child: Text('angle-y ${voltage}',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 18, color: Colors.red)),
               flex: 1,
             ),
             Expanded(
-              child: Text('功率 ${power}',
+              child: Text('angle-z ${power}',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 18, color: Colors.green)),
               flex: 1,
